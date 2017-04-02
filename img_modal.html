@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script>
+            function imgSelect() {
+                var file = $("#imageSelect").prop("files")[0];
+                
+                //画像ファイルかチェック
+                if (file["type"] != "image/jpeg" && file["type"] != "image/png" && file["type"] != "image/gif") {
+                    alert("画像ファイルを選択してください");
+                    //ファイル選択クリア
+                    $("#imageSelect").val('');
+
+                } else {
+                    var fr = new FileReader();
+
+                    fr.onload = function() {
+                        //背景グレーにしてモーダルウィンドウを表示
+                        if ($("#modal-overlay")[0]) {
+                            $("#modal-overlay").remove();
+                        }
+                        $("body").append('<div id="modal-overlay"></div>');
+                        $("#modal-overlay").fadeIn("slow");
+                        $("#modal-content").fadeIn("slow");
+                        
+                        //選択した画像をimgタグに表示
+                        $('#preview').attr("src", fr.result);
+                        
+                        //OKボタンまたは背景のグレーをクリックした場合
+                        $("#modal-ok, #modal-overlay").unbind().click(function () {                            
+                            //モーダルウィンドウ非表示にして、背景グレーも非表示
+                            $("#modal-content, #modal-overlay").fadeOut("slow", function () {
+                                $("#modal-overlay").remove();
+                            });
+                        });
+                        
+                        //cancelボタンクリックした場合
+                        $("#modal-cancel").unbind().click(function () {
+                            //モーダルウィンドウ非表示にして、背景グレーも非表示
+                            $("#modal-content, #modal-overlay").fadeOut("slow", function () {
+                                $("#modal-overlay").remove();
+                            });
+                            //ファイル選択クリア
+                            $("#imageSelect").val('');
+                        });
+                    };
+
+                    fr.readAsDataURL(file);
+                }
+            }   
+        </script>
+        <style>
+            /*モーダルウィンドウ*/
+            #modal-content{
+                width:50%;
+                margin:1.5em auto 0;
+                padding:10px 20px;
+                border-radius: 10px;
+                background:#fff;
+                z-index:2;
+                position:fixed;
+                display:none;
+            }
+            .button-link{
+                color:#00f;
+                text-decoration:underline;
+            }
+            .button-link:hover{
+                cursor:pointer;
+                color:#f00;
+            }
+            #modal-overlay{
+                z-index:1;
+                display:none;
+                position:fixed;
+                top:0;
+                left:0;
+                width:100%;
+                height:120%;
+                background-color:rgba(0,0,0,0.75);
+            }            
+        </style>        
+        <title>ファイル選択した画像をモーダル表示</title>
+    </head>
+    <body>
+        <!-- モーダルウィンドウ -->
+        <div id="modal-content">
+            <img src="" id="preview" width="500px" />
+            <a id="modal-cancel" class="button-link">cancel</a>
+            <a id="modal-ok" class="button-link">OK</a>
+        </div>    
+        
+        <input type="file" id="imageSelect" onChange="imgSelect();" />
+    </body>
+</html>
